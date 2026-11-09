@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K11 | Academic Ranking</title>
+<style>
+:root{
+ --bg:#080e19;--panel:#111b2b;--panel2:#16243a;
+ --line:#263750;--text:#edf3ff;--muted:#8fa3bf;
+ --cyan:#50d9ce;--gold:#f2c66d;--blue:#78aaff;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Inter,"Segoe UI",Arial,sans-serif;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.layout{display:flex;min-height:100vh}
+.sidebar{
+ width:245px;background:#0c1524;border-right:1px solid var(--line);
+ padding:25px 15px;position:fixed;inset:0 auto 0 0;
+ overflow-y:auto;z-index:5;
+}
+.brand{font-size:19px;font-weight:800;padding:5px 10px 25px}
+.brand span{color:var(--cyan)}
+.nav-title{
+ color:#637b9c;font-size:10px;letter-spacing:1.5px;
+ padding:15px 10px 8px;font-weight:800
+}
+.nav{
+ width:100%;display:flex;align-items:center;gap:12px;
+ background:none;border:0;color:#9eb0c9;
+ padding:12px;border-radius:9px;text-align:left;
+ margin:3px 0;font-size:13px;
+}
+.nav:hover,.nav.active{background:#1a2d47;color:white}
+.nav.active{box-shadow:inset 3px 0 var(--cyan)}
+.main{margin-left:245px;width:calc(100% - 245px);padding:30px 35px}
+.top{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:15px;flex-wrap:wrap;margin-bottom:30px
+}
+.eyebrow{font-size:11px;color:var(--cyan);letter-spacing:2px;font-weight:800}
+h1{font-size:29px;margin:9px 0}
+.sub{color:var(--muted);font-size:13px}
+.status{
+ padding:9px 13px;border:1px solid var(--line);
+ border-radius:30px;color:var(--cyan);font-size:11px
+}
+.page{display:none;animation:fade .25s}
+.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+h2{font-size:20px;margin:25px 0 16px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.card,.panel{
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:15px;padding:20px;
+}
+.card small{color:var(--muted);font-size:12px}
+.big{font-size:28px;font-weight:800;margin-top:12px}
+.cyan{color:var(--cyan)}.gold{color:var(--gold)}
+.panel{margin-top:18px}
+.panel-head{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:12px;flex-wrap:wrap;margin-bottom:18px
+}
+.panel-head h3{font-size:16px;margin:0}
+.tools{display:flex;gap:9px;flex-wrap:wrap}
+input,select{
+ background:#0a1423;color:white;border:1px solid var(--line);
+ border-radius:9px;padding:11px 13px;outline:none
+}
+input:focus,select:focus{border-color:var(--cyan)}
+input{min-width:190px}
+.btn{
+ background:#203a59;color:white;border:1px solid #365575;
+ border-radius:9px;padding:10px 14px
+}
+.btn:hover{background:#2c4d70}
+.btn.primary{background:#176f70;border-color:#269a91}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;white-space:nowrap}
+th{
+ color:#8298b6;text-transform:uppercase;font-size:10px;
+ letter-spacing:1px;text-align:left;padding:13px;
+ border-bottom:1px solid var(--line)
+}
+td{padding:14px 13px;border-bottom:1px solid #202e43;font-size:13px}
+tbody tr:hover{background:#19283d}
+.rank{font-weight:800;color:#9cbaff}
+.rank.one{color:var(--gold)}
+.score{font-weight:800;color:var(--cyan)}
+.bar{height:6px;background:#26354b;border-radius:20px;min-width:75px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#238d9a,#5ce0cb);border-radius:20px}
+.medals{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.medal{text-align:center;background:var(--panel2);border:1px solid var(--line);padding:23px;border-radius:14px}
+.medal .symbol{font-size:25px}
+.medal strong{display:block;font-size:23px;margin:9px}
+.medal small{color:var(--muted)}
+.subject-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.subject{
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:13px;padding:18px;text-align:left;color:white;
+ transition:.2s
+}
+.subject:hover{border-color:var(--cyan);transform:translateY(-2px)}
+.subject b{font-size:15px;display:block;margin-bottom:8px}
+.subject span{font-size:11px;color:var(--muted)}
+.subject .arrow{float:right;color:var(--cyan)}
+.info{color:var(--muted);font-size:12px;line-height:1.8}
+.detail-title{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.back{color:var(--cyan);background:none;border:0;padding:8px 0}
+footer{text-align:center;color:#647994;font-size:11px;padding:40px 0}
+.mobile-menu{display:none}
+@media(max-width:900px){
+ .sidebar{width:205px}.main{margin-left:205px;width:calc(100% - 205px);padding:25px 20px}
+ .cards{grid-template-columns:repeat(2,1fr)}
+ .subject-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .sidebar{position:relative;width:100%;height:auto;max-height:none;border:0;border-bottom:1px solid var(--line);padding:10px}
+ .layout{display:block}
+ .brand{padding:8px}
+ .nav-title{display:none}
+ .sidebar nav{display:flex;overflow-x:auto}
+ .nav{white-space:nowrap;width:auto;flex-shrink:0}
+ .main{margin:0;width:100%;padding:20px 14px}
+ .top{margin-bottom:20px}
+ .medals{grid-template-columns:1fr}
+ .subject-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+ <div class="brand">K11 <span>ACADEMIC</span></div>
+ <div class="nav-title">DASHBOARD</div>
+ <nav>
+  <button class="nav active" data-page="overview">◈ Tổng quan</button>
+  <button class="nav" data-page="overall">▤ Xếp hạng tổng hợp</button>
+  <button class="nav" data-page="subjects">▦ Xếp hạng từng môn</button>
+  <button class="nav" data-page="details">◉ Chi tiết các lớp</button>
+  <button class="nav" data-page="method">ⓘ Phương pháp tính</button>
+ </nav>
+ <div class="nav-title">MÔN HỌC</div>
+ <nav id="subjectNav"></nav>
+</aside>
+
+<main class="main">
+ <header class="top">
+  <div>
+   <div class="eyebrow">ACADEMIC PERFORMANCE / K11</div>
+   <h1 id="pageTitle">Tổng quan học tập</h1>
+   <div class="sub">Bảng thống kê điểm giữa học kỳ I · Khối 11</div>
+  </div>
+  <div class="status">● DỮ LIỆU ĐÃ NHẬP</div>
+ </header>
+
+ <section class="page active" id="overview">
+  <div class="cards" id="stats"></div>
+  <h2>Top 3 lớp dẫn đầu</h2>
+  <div class="medals" id="podium"></div>
+  <div class="panel">
+   <div class="panel-head"><h3>Top 10 lớp toàn khối</h3>
+   <button class="btn" onclick="showPage('overall')">Xem tất cả →</button></div>
+   <div class="table-wrap"><table><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm TB</th><th>Thể hiện</th></tr></thead>
+   <tbody id="topTen"></tbody></table></div>
+  </div>
+  <h2>Các môn được thống kê</h2>
+  <div class="subject-grid" id="overviewSubjects"></div>
+ </section>
+
+ <section class="page" id="overall">
+  <div class="panel">
+   <div class="panel-head"><h3>Xếp hạng điểm trung bình tổng hợp</h3>
+    <button class="btn primary" onclick="exportCSV('overall')">↓ Xuất CSV</button>
+   </div>
+   <p class="info">Điểm trung bình của tất cả môn có dữ liệu ở mỗi lớp. Không tính ô trống.</p>
+   <div class="tools"><input id="overallSearch" placeholder="Tìm tên lớp..." oninput="renderOverall()">
+    <select id="overallSort" onchange="renderOverall()"><option value="desc">Điểm cao → thấp</option><option value="asc">Điểm thấp → cao</option></select>
+   </div>
+   <div class="table-wrap"><table><thead><tr><th>Hạng</th><th>Lớp</th><th>Tổng điểm</th><th>Số môn</th><th>Điểm TB</th><th>Biểu đồ</th></tr></thead><tbody id="overallBody"></tbody></table></div>
+  </div>
+ </section>
+
+ <section class="page" id="subjects">
+  <h2>Chọn môn học để xem bảng xếp hạng</h2>
+  <div class="subject-grid" id="subjectCards"></div>
+ </section>
+
+ <section class="page" id="subjectDetail">
+  <button class="back" onclick="showPage('subjects')">← Quay lại danh sách môn</button>
+  <div class="detail-title"><h2 id="subjectTitle">Môn học</h2></div>
+  <div class="panel">
+   <div class="panel-head"><h3>Bảng xếp hạng môn học</h3><button class="btn primary" onclick="exportCSV('subject')">↓ Xuất CSV</button></div>
+   <p class="info" id="subjectInfo"></p>
+   <div class="tools"><input id="subjectSearch" placeholder="Tìm tên lớp..." oninput="renderSubject()">
+   <select id="subjectSort" onchange="renderSubject()"><option value="desc">Điểm cao → thấp</option><option value="asc">Điểm thấp → cao</option></select></div>
+   <div class="table-wrap"><table><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm TB</th><th>Biểu đồ</th></tr></thead><tbody id="subjectBody"></tbody></table></div>
+  </div>
+ </section>
+
+ <section class="page" id="details">
+  <div class="panel">
+   <div class="panel-head"><h3>Thông tin điểm từng lớp</h3><button class="btn primary" onclick="exportCSV('details')">↓ Xuất CSV</button></div>
+   <div class="tools"><input id="detailSearch" placeholder="Tìm tên lớp..." oninput="renderDetails()"></div>
+   <div class="table-wrap"><table><thead><tr><th>Lớp</th><th>Tổng điểm</th><th>Số môn</th><th>Điểm TB</th></tr></thead><tbody id="detailsBody"></tbody></table></div>
+  </div>
+ </section>
+
+ <section class="page" id="method">
+  <div class="panel">
+   <h2>Nguyên tắc tính điểm</h2>
+   <h3>1. Điểm trung bình tổng hợp</h3>
+   <p class="score">TB = Tổng điểm các môn có dữ liệu / Số môn có dữ liệu</p>
+   <h3>2. Xếp hạng riêng từng môn</h3>
+   <p class="info">So sánh điểm của các lớp trong cùng một môn, sắp xếp giảm dần. Lớp không có điểm không tham gia bảng xếp hạng môn đó.</p>
+   <h3>3. Xử lý dữ liệu</h3>
+   <p class="info">
+    • Không tự chuyển ô trống thành 0.<br>
+    • Không đưa dòng trung bình toàn khối vào danh sách lớp.<br>
+    • Các môn chưa có dữ liệu được đánh dấu riêng.<br>
+    • Điểm bằng nhau được đồng hạng.<br>
+    • Điểm hiển thị làm tròn hai chữ số thập phân.
+   </p>
+   <h3>4. Giới hạn</h3>
+   <p class="info">Đây là phép tính trung bình cộng các môn có điểm, không phải điểm trung bình chính thức nếu nhà trường có quy định hệ số hoặc cách tính riêng. Tên lớp 1111 cần đối chiếu lại ảnh gốc.</p>
+  </div>
+ </section>
+
+ <footer>K11 ACADEMIC RANKING · PERSONAL STATISTICS DASHBOARD</footer>
+</main>
+</div>
+
+<script>
+// DỮ LIỆU GỐC ĐỌC TỪ ẢNH
+const classes=[
+{n:"1111",s:{"Toán":6.73,"Vật lí":5.69,"Ngữ văn":7.28,"Lịch sử":6.82,"Địa lí":7.39,"Ngoại ngữ 1":6.69,"GDKT&PL":8.57}},
+{n:"11D1",s:{"Toán":8.08,"Vật lí":6.73,"Ngữ văn":8.13,"Lịch sử":8.22,"Địa lí":7.92,"Ngoại ngữ 1":7.84,"GDKT&PL":9.25}},
+{n:"11D2",s:{"Toán":7.70,"Vật lí":7.78,"Ngữ văn":8.06,"Lịch sử":7.86,"Địa lí":8.04,"Ngoại ngữ 1":7.47,"GDKT&PL":8.88}},
+{n:"11D3",s:{"Toán":7.47,"Vật lí":6.28,"Ngữ văn":7.98,"Lịch sử":7.50,"Địa lí":8.32,"Ngoại ngữ 1":7.69}},
+{n:"11D4",s:{"Toán":7.04,"Vật lí":6.06,"Ngữ văn":7.40,"Lịch sử":7.98,"Địa lí":6.92,"Ngoại ngữ 1":6.43,"GDKT&PL":7.79}},
+{n:"11D5",s:{"Toán":5.85,"Vật lí":5.58,"Ngữ văn":7.37,"Lịch sử":6.16,"Địa lí":7.13,"Ngoại ngữ 1":5.44,"GDKT&PL":8.21}},
+{n:"11D6",s:{"Toán":6.47,"Vật lí":6.44,"Ngữ văn":7.13,"Lịch sử":6.68,"Địa lí":6.52,"Ngoại ngữ 1":6.07,"GDKT&PL":7.80}},
+{n:"11D7",s:{"Toán":6.72,"Vật lí":7.18,"Ngữ văn":7.23,"Lịch sử":6.69,"Địa lí":7.48,"Ngoại ngữ 1":5.89}},
+{n:"11D8",s:{"Toán":6.90,"Hóa học":8.15,"Ngữ văn":7.61,"Lịch sử":4.67,"Địa lí":6.62,"Ngoại ngữ 1":5.87,"GDKT&PL":8.42}},
+{n:"11A1",s:{"Toán":8.66,"Vật lí":7.75,"Hóa học":8.96,"Ngữ văn":7.31,"Ngoại ngữ 1":6.99}},
+{n:"11A2",s:{"Toán":8.93,"Vật lí":7.35,"Hóa học":8.90,"Sinh học":9.60,"Ngữ văn":7.41,"Lịch sử":6.00,"Ngoại ngữ 1":7.46}},
+{n:"11A3",s:{"Toán":8.53,"Vật lí":7.69,"Hóa học":8.77,"Sinh học":8.50,"Ngữ văn":7.17,"Ngoại ngữ 1":8.07}},
+{n:"11A4",s:{"Toán":7.35,"Vật lí":6.00,"Hóa học":8.52,"Sinh học":8.98,"Ngữ văn":6.84,"Lịch sử":6.40,"Ngoại ngữ 1":6.20}},
+{n:"11A5",s:{"Toán":6.98,"Vật lí":5.58,"Hóa học":8.22,"Sinh học":8.94,"Ngữ văn":6.47,"Lịch sử":4.70,"Ngoại ngữ 1":6.28}},
+{n:"11I2",s:{"Toán":7.82,"Vật lí":7.09,"Hóa học":8.41,"Sinh học":9.03,"Ngữ văn":7.14,"Lịch sử":7.30,"Ngoại ngữ 1":7.48}},
+{n:"11A6",s:{"Toán":7.75,"Vật lí":7.00,"Hóa học":8.59,"Sinh học":9.30,"Ngữ văn":6.45,"Lịch sử":7.15,"Ngoại ngữ 1":6.58}},
+{n:"11A7",s:{"Toán":6.98,"Vật lí":6.48,"Hóa học":8.34,"Sinh học":9.65,"Ngữ văn":6.54,"Lịch sử":5.62,"Ngoại ngữ 1":5.69}}
+];
+
+const subjects=["Toán","Vật lí","Hóa học","Sinh học","Ngữ văn","Lịch sử","Địa lí","Ngoại ngữ 1","GDKT&PL","Tin học","Công nghệ"];
+let currentSubject="Toán";
+
+function total(c){return Object.values(c.s).reduce((a,b)=>a+b,0)}
+function count(c){return Object.keys(c.s).length}
+function avg(c){return total(c)/count(c)}
+function sortedOverall(){return [...classes].sort((a,b)=>avg(b)-avg(a))}
+function subjectRows(sub){
+ return classes.filter(c=>c.s[sub]!==undefined)
+ .sort((a,b)=>b.s[sub]-a.s[sub]);
+}
+function rankOf(arr,i){
+ return i>0&&arr[i].value===arr[i-1].value?arr[i-1].rank:i+1;
+}
+function fmt(x){return x.toFixed(2)}
+function rowHTML(rank,name,score,bar){
+ return `<tr><td class="rank ${rank===1?'one':''}">${rank}</td>
+ <td><b>${name}</b></td><td class="score">${fmt(score)}</td>
+ <td><div class="bar"><i style="width:${score*10}%"></i></div></td></tr>`;
+}
+function showPage(id){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".nav").forEach(b=>b.classList.toggle("active",b.dataset.page===id));
+ const titles={overview:"Tổng quan học tập",overall:"Xếp hạng tổng hợp",subjects:"Xếp hạng theo môn",details:"Chi tiết các lớp",method:"Phương pháp thống kê",subjectDetail:"Xếp hạng môn học"};
+ document.getElementById("pageTitle").textContent=titles[id]||"Xếp hạng";
+ window.scrollTo(0,0);
+}
+document.querySelectorAll(".nav[data-page]").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+
+function subjectCard(sub){
+ const list=subjectRows(sub);
+ const top=list[0];
+ return `<button class="subject" onclick="openSubject('${sub}')">
+ <span class="arrow">↗</span><b>${sub}</b>
+ <span>${list.length?list.length+" lớp có điểm · Cao nhất "+fmt(top.s[sub]):"Chưa có dữ liệu"}</span></button>`;
+}
+function init(){
+ const overall=sortedOverall();
+ const top=overall[0];
+ document.getElementById("stats").innerHTML=[
+ ["Số lớp thống kê",classes.length,"cyan"],
+ ["Số môn có dữ liệu",9,""],
+ ["Lớp dẫn đầu",top.n,"gold"],
+ ["Điểm TB cao nhất",fmt(avg(top)),"cyan"]
+ ].map(x=>`<div class="card"><small>${x[0]}</small><div class="big ${x[2]}">${x[1]}</div></div>`).join("");
+
+ document.getElementById("podium").innerHTML=overall.slice(0,3).map((c,i)=>
+ `<div class="medal"><div class="symbol">${["🥇","🥈","🥉"][i]}</div><strong>${c.n}</strong><small>Điểm TB ${fmt(avg(c))}</small></div>`).join("");
+
+ document.getElementById("topTen").innerHTML=overall.slice(0,10).map((c,i)=>
+ `<tr><td class="rank ${i===0?'one':''}">${i+1}</td><td><b>${c.n}</b></td><td class="score">${fmt(avg(c))}</td><td><div class="bar"><i style="width:${avg(c)*10}%"></i></div></td></tr>`).join("");
+
+ document.getElementById("subjectCards").innerHTML=subjects.map(subjectCard).join("");
+ document.getElementById("overviewSubjects").innerHTML=subjects.slice(0,9).map(subjectCard).join("");
+ document.getElementById("subjectNav").innerHTML=subjects.map(s=>
+ `<button class="nav" onclick="openSubject('${s}')">${s}</button>`).join("");
+ renderOverall();renderDetails();
+}
+function renderOverall(){
+ let arr=sortedOverall();
+ if(document.getElementById("overallSort").value==="asc")arr.reverse();
+ const q=document.getElementById("overallSearch").value.toLowerCase();
+ arr=arr.filter(c=>c.n.toLowerCase().includes(q));
+ let prev=null,rank=0;
+ document.getElementById("overallBody").innerHTML=arr.map((c,i)=>{
+  if(prev===null||Math.abs(avg(c)-prev)>1e-9)rank=i+1;
+  prev=avg(c);
+  return `<tr><td class="rank ${rank===1?'one':''}">${rank}</td><td><b>${c.n}</b></td><td>${fmt(total(c))}</td><td>${count(c)}</td><td class="score">${fmt(avg(c))}</td><td><div class="bar"><i style="width:${avg(c)*10}%"></i></div></td></tr>`;
+ }).join("");
+}
+function openSubject(sub){
+ currentSubject=sub;
+ document.getElementById("subjectTitle").textContent="Xếp hạng môn "+sub;
+ document.getElementById("subjectSearch").value="";
+ document.getElementById("subjectInfo").textContent=
+ subjectRows(sub).length?subjectRows(sub).length+" lớp có điểm môn "+sub+".":"Chưa có dữ liệu môn học này.";
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.getElementById("subjectDetail").classList.add("active");
+ document.querySelectorAll(".nav").forEach(b=>b.classList.remove("active"));
+ document.getElementById("pageTitle").textContent="Xếp hạng môn "+sub;
+ renderSubject();window.scrollTo(0,0);
+}
+function renderSubject(){
+ let arr=subjectRows(currentSubject);
+ if(document.getElementById("subjectSort").value==="asc")arr.reverse();
+ const q=document.getElementById("subjectSearch").value.toLowerCase();
+ arr=arr.filter(c=>c.n.toLowerCase().includes(q));
+ let prev=null,rank=0;
+ document.getElementById("subjectBody").innerHTML=arr.map((c,i)=>{
+  let v=c.s[currentSubject];
+  if(prev===null||v!==prev)rank=i+1;
+  prev=v;
+  return rowHTML(rank,c.n,v);
+ }).join("")||`<tr><td colspan="4">Không có dữ liệu.</td></tr>`;
+}
+function renderDetails(){
+ const q=document.getElementById("detailSearch").value.toLowerCase();
+ document.getElementById("detailsBody").innerHTML=sortedOverall().filter(c=>c.n.toLowerCase().includes(q)).map(c=>
+ `<tr><td><b>${c.n}</b></td><td>${fmt(total(c))}</td><td>${count(c)}</td><td class="score">${fmt(avg(c))}</td></tr>`).join("");
+}
+function exportCSV(type){
+ let lines=[];
+ if(type==="overall"||type==="details"){
+  lines=[["Lớp","Tổng điểm","Số môn","Điểm TB"]];
+  sortedOverall().forEach(c=>lines.push([c.n,fmt(total(c)),count(c),fmt(avg(c))]));
+ }else{
+  lines=[["Hạng","Lớp","Môn","Điểm"]];
+  subjectRows(currentSubject).forEach((c,i)=>lines.push([i+1,c.n,currentSubject,fmt(c.s[currentSubject])]));
+ }
+ const csv="\uFEFF"+lines.map(r=>r.join(",")).join("\n");
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+ a.download=type==="subject"?"Xep_hang_"+currentSubject+".csv":"Xep_hang_K11.csv";
+ a.click();URL.revokeObjectURL(a.href);
+}
+init();
+</script>
+</body>
+</html>
